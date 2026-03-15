@@ -8,13 +8,15 @@ export default defineConfig({
     port: 7777,
     proxy: {
       '/PokieTicker/api': {
-        target: 'http://127.0.0.1:8000',
+        target: process.env.VITE_API_TARGET || 'http://127.0.0.1:8000',
         changeOrigin: true,
+        secure: true,
         rewrite: (path) => path.replace(/^\/PokieTicker/, ''),
       },
       '/api': {
-        target: 'http://127.0.0.1:8000',
+        target: process.env.VITE_API_TARGET || 'http://127.0.0.1:8000',
         changeOrigin: true,
+        secure: true,
       },
     },
   },

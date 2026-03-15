@@ -1,7 +1,11 @@
+import logging
+
 from fastapi import APIRouter, Query, HTTPException, BackgroundTasks
 from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime, timedelta, timezone
+
+logger = logging.getLogger(__name__)
 
 from backend.database import get_conn
 from backend.polygon.client import fetch_ohlc, fetch_news, search_tickers
@@ -45,7 +49,7 @@ def search(q: str = Query(..., min_length=1)):
                 if r["symbol"] not in seen:
                     results.append(r)
         except Exception:
-            pass  # Polygon search is best-effort
+            logger.debug("Polygon search failed for query=%s", q)
 
     return results
 
@@ -167,5 +171,5 @@ def _fetch_ticker_data(symbol: str):
         )
         conn.commit()
         conn.close()
-    except Exception as e:
-        print(f"Error fetching data for {symbol}: {e}")
+    except Exception:
+        logger.exception("Error fetching data for %s", symbol)

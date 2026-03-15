@@ -1,7 +1,11 @@
+import logging
+
 from fastapi import APIRouter, BackgroundTasks
 from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime, timedelta, timezone
+
+logger = logging.getLogger(__name__)
 
 from backend.database import get_conn
 from backend.polygon.client import fetch_ohlc, fetch_news
@@ -90,8 +94,8 @@ def _do_fetch(symbol: str, start: str, end: str):
 
         # Run alignment
         align_news_for_symbol(symbol)
-    except Exception as e:
-        print(f"Fetch error for {symbol}: {e}")
+    except Exception:
+        logger.exception("Fetch error for %s", symbol)
 
 
 @router.post("/process")
